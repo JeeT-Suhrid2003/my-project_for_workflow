@@ -1,4 +1,4 @@
-name: Java CI with Gradle
+name: Java CI with Gradle + Docker
 
 on:
   push:
@@ -27,7 +27,15 @@ jobs:
         if: runner.os != 'Windows'
         run: chmod +x gradlew
 
-     
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
       - name: Build with Gradle Wrapper (Unix)
         if: runner.os != 'Windows'
@@ -36,3 +44,22 @@ jobs:
       - name: Build with Gradle Wrapper (Windows)
         if: runner.os == 'Windows'
         run: .\gradlew.bat build
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: build   # run only after Gradle build succeeds
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build Docker image
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-java-app:latest .
+
+      - name: Push Docker image
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-project_for_workflow:latest
