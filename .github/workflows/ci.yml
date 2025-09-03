@@ -43,6 +43,6 @@ jobs:
       shell: bash
     - name: Building with Gradle Wrapper
       if: runner.os == 'Windows'
-      run: gtadlew.bat build
+      run: gradlew.bat build
       shell: cmd
 
