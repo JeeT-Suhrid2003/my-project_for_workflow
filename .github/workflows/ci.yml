@@ -16,7 +16,10 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{matrix}}
+    strategy: 
+      matrix: 
+        os: [ubumtu-latest,windows-latest,macos-latest]
 
     steps:
     - name: Checkout repository
