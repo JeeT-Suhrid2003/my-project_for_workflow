@@ -16,7 +16,7 @@ on:
 jobs:
   build:
 
-    runs-on: ${{matrix}}
+    runs-on: ${{matrix.os}}
     strategy: 
       matrix: 
         os: [ubumtu-latest,windows-latest,macos-latest]
@@ -34,6 +34,7 @@ jobs:
     # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
     # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
     - name: Setup Gradle
+      if: runner.os != 'Windows'
       run: chmod +x gradlew
       
     - name: Build with Gradle Wrapper
